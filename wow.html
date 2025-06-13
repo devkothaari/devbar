@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Will You Be Mine?</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', sans-serif;
+      background: linear-gradient(120deg, #ffe4ec, #f9d5e5);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #e91e63;
+    }
+
+    .button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .yes {
+      background-color: #ff80ab;
+      color: white;
+    }
+
+    .no {
+      background-color: #ffe6e9;
+      color: #e91e63;
+      position: absolute;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      animation: float 3s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1 id="question">Will you be mine?</h1>
+<div>
+  <button class="button yes" onclick="nextStep()">Yes</button>
+  <button class="button no" id="noBtn" onmouseover="moveNo()">No</button>
+</div>
+
+<audio id="bgMusic" src="https://cdn.pixabay.com/download/audio/2022/03/28/audio_4f7f24452e.mp3?filename=romantic-piano-ambient-10906.mp3" autoplay loop></audio>
+
+<div class="modal hidden" id="modal">
+  <h1 id="modalText">Yay! I knew it 🥰</h1>
+  <button class="button yes" onclick="nextLayer()">Next</button>
+</div>
+
+<script>
+  let step = 0;
+  const steps = [
+    "Yay! I knew it 🥰",
+    "Here's a virtual hug 🤗",
+    "I love you ❤️"
+  ];
+
+  const modal = document.getElementById('modal');
+  const modalText = document.getElementById('modalText');
+  const bgMusic = document.getElementById('bgMusic');
+
+  function nextStep() {
+    modal.classList.remove("hidden");
+    bgMusic.play();
+    dropHearts();
+  }
+
+  function nextLayer() {
+    step++;
+    if (step < steps.length) {
+      modalText.innerText = steps[step];
+    } else {
+      modalText.innerText = "Forever yours ";
+      document.querySelector('button[onclick="nextLayer()"]').classList.add("hidden");
+    }
+  }
+
+  function moveNo() {
+    const noBtn = document.getElementById('noBtn');
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+  }
+
+  function dropHearts() {
+    setInterval(() => {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerText = "💖";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.top = "100vh";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 3000);
+    }, 300);
+  }
+</script>
+
+</body>
+</html>

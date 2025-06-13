@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>How Much Do We Hate Dev Today?</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #ffdddd, #ffe6e6);
+      position: relative;
+    }
+
+    .date-box {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 12px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    h1 {
+      margin-top: 60px;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      color: #333;
+      text-align: center;
+    }
+
+    .slider-container {
+      width: 80%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 25px;
+      background-color: #eee;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .fill {
+      height: 100%;
+      background-color: #ff4d4d;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .percentage {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .emoji {
+      font-size: 3rem;
+      transition: all 0.2s ease;
+    }
+
+    .log {
+      margin-top: 30px;
+      max-width: 500px;
+      width: 90%;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 0.9rem;
+      color: #444;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="date-box" id="date-box"></div>
+
+  <h1>How Much Do We Hate Dev Today?</h1>
+
+  <div class="slider-container">
+    <div class="progress-bar">
+      <div class="fill" id="fill-bar"></div>
+    </div>
+    <div class="percentage" id="percentage">101%</div>
+    <div class="emoji" id="emoji">😡</div>
+    <input type="range" min="0" max="101" value="101" id="slider" />
+  </div>
+
+  <div class="log" id="log-box">
+    <strong>Log:</strong>
+    <div id="log-entries"></div>
+  </div>
+
+  <script>
+    const slider = document.getElementById('slider');
+    const fillBar = document.getElementById('fill-bar');
+    const percentage = document.getElementById('percentage');
+    const emoji = document.getElementById('emoji');
+    const dateBox = document.getElementById('date-box');
+    const logEntries = document.getElementById('log-entries');
+
+    function updateUI(value) {
+      fillBar.style.width = value + '%';
+      percentage.textContent = value + '%';
+      if (value > 90) emoji.textContent = '😡';
+      else if (value > 80) emoji.textContent = '😠';
+      else if (value > 70) emoji.textContent = '😤';
+      else if (value > 60) emoji.textContent = '😒';
+      else if (value > 50) emoji.textContent = '😕';
+      else if (value > 40) emoji.textContent = '😐';
+      else if (value > 30) emoji.textContent = '🙂';
+      else if (value > 20) emoji.textContent = '😊';
+      else emoji.textContent = '😇';
+    }
+
+    function setDate() {
+      const today = new Date();
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      dateBox.textContent = today.toLocaleDateString('en-GB', options);
+    }
+
+    function logInteraction(value, emojiIcon) {
+      const now = new Date();
+      const timestamp = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      const dateKey = now.toISOString().split('T')[0];
+      const logData = JSON.parse(localStorage.getItem('hateDevLog') || '{}');
+      if (!logData[dateKey]) logData[dateKey] = [];
+      logData[dateKey].push({ time: timestamp, value: value, emoji: emojiIcon });
+      localStorage.setItem('hateDevLog', JSON.stringify(logData));
+
+      // Update "lastMood" separately
+      localStorage.setItem('lastMood', JSON.stringify({ value, emoji: emojiIcon }));
+      renderLog();
+    }
+
+    function renderLog() {
+      const logData = JSON.parse(localStorage.getItem('hateDevLog') || '{}');
+      const allEntries = [];
+      Object.entries(logData).forEach(([date, entries]) => {
+        entries.forEach(entry => {
+          allEntries.push(`<div class="log-entry">${date} @ ${entry.time} → ${entry.value}% ${entry.emoji}</div>`);
+        });
+      });
+      logEntries.innerHTML = allEntries.reverse().join('');
+    }
+
+    function restoreLastMood() {
+      const lastMood = JSON.parse(localStorage.getItem('lastMood'));
+      if (lastMood) {
+        slider.value = lastMood.value;
+        updateUI(lastMood.value);
+      } else {
+        slider.value = 101;
+        updateUI(101);
+      }
+    }
+
+    slider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      updateUI(value);
+      logInteraction(value, emoji.textContent);
+    });
+
+    setDate();
+    restoreLastMood();
+    renderLog();
+  </script>
+</body>
+</html>
