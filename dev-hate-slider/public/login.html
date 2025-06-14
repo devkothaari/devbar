@@ -17,6 +17,7 @@
     function login() {
       const pw = document.getElementById('pw').value;
       if (pw === 'ihatedev') {
+        localStorage.setItem('devhate_loggedin', 'yes');
         window.location = "index.html";
       } else {
         document.getElementById('err').textContent = "Wrong password!";
@@ -25,6 +26,8 @@
     document.getElementById('pw').addEventListener('keydown', function(e){
       if(e.key === 'Enter') login();
     });
+    // Optional: Log out any previous session on landing here
+    localStorage.removeItem('devhate_loggedin');
   </script>
 </body>
 </html>

@@ -7,12 +7,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>
+    // Redirect to login page if not authenticated
+    if (localStorage.getItem('devhate_loggedin') !== 'yes') {
+      window.location = "login.html";
+    }
+  </script>
   <div class="container">
     <div class="date-box" id="date-box"></div>
     <h1>How Much Do We Hate Dev Today?</h1>
     <div id="nameForm">
       <div style="margin-bottom:16px; font-size:1.1rem">
-        Umm heyy, What should we call u today?<br>
+        Umm heyy cutie – What should we call u today?<br>
         Dev's a bitch today as well, but what do we call u sunshine?
       </div>
       <input id="name" placeholder="Your sweet nickname..." autofocus>
@@ -26,9 +32,16 @@
       <div class="emoji" id="emoji">😡</div>
       <input type="range" min="0" max="101" value="101" id="slider"/>
       <button id="submitBtn" style="margin-top:12px;">Submit Hate</button>
-      <div id="thankyou" style="color:green; margin-top:16px; display:none;">Thank You, See you again Tomorrow!</div>
+      <div id="thankyou" style="color:green; margin-top:16px; display:none;">Thanks for hating Dev! 💕</div>
+      <button onclick="logout()" style="margin-top:24px; background:#888;">Log Out</button>
     </div>
   </div>
   <script src="script.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem('devhate_loggedin');
+      window.location = "login.html";
+    }
+  </script>
 </body>
 </html>
